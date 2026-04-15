@@ -18,12 +18,16 @@ import (
 )
 
 func main() {
+	const uploadPath = "uploads"
+	const port = 8423
+
 	err := db.Connect()
 	if err != nil {
 		log.Fatal(err)
 	}
-	const uploadPath = "uploads"
-	const port = 8423
+
+	utils.VerifyUploadsDir(uploadPath)
+
 	r := chi.NewRouter()
 
 	fs := http.FileServer(http.Dir("./client/dist"))
