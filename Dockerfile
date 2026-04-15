@@ -8,7 +8,7 @@ COPY . .
 RUN go build -o app
 
 # Step 2: Run
-FROM linux:alpine
+FROM alpine:latest
 
 WORKDIR /app
 COPY --from=builder /app/app .
