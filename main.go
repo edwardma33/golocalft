@@ -26,7 +26,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	utils.VerifyUploadsDir(uploadPath)
+	err = utils.VerifyUploadsDir(uploadPath)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	r := chi.NewRouter()
 
