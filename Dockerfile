@@ -16,21 +16,34 @@ FROM golang:1.25 AS builder
 
 WORKDIR /app
 
+# C toolchain + sqlite for CGO
+RUN apt-get update && apt-get install -y \
+    gcc \
+    sqlite3 \
+    libsqlite3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
 
-# Copy built frontend from bun stage
 COPY --from=client-builder /app/client/dist ./client/dist
 
-RUN go build -o app
+# ARM64 Linux build with CGO enabled
+RUN CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build -o app
 
 
-# Step 3: Runtime
-FROM alpine:latest
+# Step 3: Runtime (IMPORTANT: NOT Alpine)
+FROM debian:bookworm-slim
 
 WORKDIR /app
+
+# SQLite runtime library
+RUN apt-get update && apt-get install -y \
+    sqlite3 \
+    libsqlite3-0 \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app/app .
 COPY --from=builder /app/client/dist ./client/dist
