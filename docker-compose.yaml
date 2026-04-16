@@ -1,0 +1,8 @@
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "8423:8423"
+    volumes:
+      - ${HOME}/.golocalft:/app/uploads
